@@ -1,19 +1,64 @@
-% load MNIST
-% load y_matrix
-% load a
-[n_test,m_test] = size(test_samples)
-% K_test = gaussian_kernel(n_test,m_test,train_samples,.5)
-%K_test = gaussian_kernel(4000,n_test,train_samples,test_samples,.5);
-for i = 1:1000
-    y_test(i) = sum(a(i)*y(i)*K_test(:,i))+b
+[n,~] = size(train_samples)
+[n_test,~] = size(test_samples)
+K_test = gaussian_kernel(n,n_test,train_samples,test_samples,.5);
+%%
+y_test = zeros(n_test,1)
+y_test_matrix = zeros(n_test,9)
+for class_index = 1:10
+    for i = 1:n_test
+         y_test(i) = sum(a_matrix(:,class_index).*y_matrix(:,class_index).*K_test(:,i))+b_vector(class_index);
+    end
+    y_test_matrix(:,class_index) = y_test;
 end
-% for i = 1:10
-%     y = y_matrix(:,1)
-%     y_test = a(i)*y(i)*K_test + b
-%output = zeros(1,n);
-%y = weight_matrix(1,:)*test_samples.' + b_vector(1)
-%for k = 1:n
-%    maxi = max(y_matrix(k,:));
-%    output(k) = find(maxi == y_matrix(k,:))-1;
-%end
-%output = output';
+%Get outputs for one-versus-all algorthim
+output = zeros(1,n_test);
+for k = 1:n_test
+    maxi = max(y_test_matrix(k,:));
+    output(k) = find(maxi == y_test_matrix(k,:))-1;
+end
+output = output';
+%%
+
+%find the y matrix for 45 test SVMs
+y_OvO_test = zeros(n_test,1);
+y_OvO_test_matrix = zeros(n_test,45);
+for SVM_index = 1:45
+    for i = 1:n_test
+        y_OvO_test(i) = sum(aOvO_matrix(:,SVM_index).*yOvO_matrix(:,SVM_index).*K_test(:,i))+bOvO_vector(SVM_index);
+    end
+    y_OvO_test_matrix(:,SVM_index) = y_OvO_test;
+end
+
+%One vs One voting scheme
+output_testOvO_matrix = zeros(n_test,45);
+SVMnum = 0;
+skip = 0;
+column_names = []
+for i = 0:9
+    j = 1 + skip; %modify j so we do not repeat any SVMs
+    skip = skip + 1;
+    while j <= 9
+        SVMnum = SVMnum + 1;
+        idx_firstclass = find(y_OvO_test_matrix(:,SVMnum) >= 0);
+        idx_secondclass = find(y_OvO_test_matrix(:,SVMnum) < 0);
+        output_testOvO = zeros(n_test,1);
+        output_testOvO(idx_firstclass) = i;
+        output_testOvO(idx_secondclass) = j;
+        output_testOvO_matrix(:,SVMnum) = output_testOvO; 
+        column_names = [column_names,strcat(num2str(i),num2str(j))]
+        j = j + 1;
+    end
+end
+
+output_OvO = mode(output_testOvO_matrix, 2)
+
+
+%%
+disp('The confusion matrix for the SVM one vs. all algorthim is:')
+conmat_ova = confusionmat(test_samples_labels,output)
+disp('The accuracy for the SVM one vs. all algorthim is:')
+accuracy_ova = trace(conmat_ova)/n_test
+disp('The confusion matrix for the SVM one vs. one algorthim is:')
+conmat_ovo = confusionmat(test_samples_labels,output_OvO)
+disp('The accuracy for the SVM one vs. one algorthim is:')
+accuracy_ovo = trace(conmat_ovo)/n_test
