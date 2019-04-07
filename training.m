@@ -1,8 +1,8 @@
- %% Compute the kernel function
+  %% Compute the kernel function
     [n,m] = size(train_samples);
     %sigma = sum(var(train_samples));
     %load K
-    K = gaussian_kernel(n,n,train_samples,train_samples,.5);
+    K = gaussian_kernel(n,n,train_samples,train_samples,.05);
 
     %% One-versus-rest algorithim 
     %Maximze the dual formulation of the SVM 
@@ -42,9 +42,9 @@
         while j <= 9
             SVMnum = SVMnum + 1; %count the number SVM we are on
             idx_pos = find(train_samples_labels == i);
-            length(idx_pos)
+            %length(idx_pos);
             idx_neg = find(train_samples_labels == j); 
-            length(idx_neg)
+            %length(idx_neg)
             ONEvsONE = zeros(n,1);
             ONEvsONE(idx_pos) = 1;
             ONEvsONE(idx_neg) = -1;
