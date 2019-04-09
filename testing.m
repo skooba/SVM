@@ -1,9 +1,9 @@
-[n,~] = size(train_samples)
 [n_test,~] = size(test_samples)
-K_test = gaussian_kernel(n,n_test,train_samples,test_samples,.05);
+%sigma = sum(var(test_samples))
+K_test = gaussian_kernel(n,n_test,train_samples,test_samples,.23);
 %%
-y_test = zeros(n_test,1)
-y_test_matrix = zeros(n_test,9)
+y_test = zeros(n_test,1);
+y_test_matrix = zeros(n_test,9);
 for class_index = 1:10
     for i = 1:n_test
          y_test(i) = sum(a_matrix(:,class_index).*y_matrix(:,class_index).*K_test(:,i))+b_vector(class_index);
@@ -32,7 +32,7 @@ end
 output_testOvO_matrix = zeros(n_test,45);
 SVMnum = 0;
 skip = 0;
-column_names = []
+column_names = [];
 for i = 0:9
     j = 1 + skip; %modify j so we do not repeat any SVMs
     skip = skip + 1;
@@ -51,8 +51,8 @@ end
 
 output_OvO = mode(output_testOvO_matrix, 2);
 %% DAGSVM algorithim
-output_testmatrixOvO_delete = zeros(n_test,45)
-skip = 0
+output_testmatrixOvO_delete = zeros(n_test,45);
+skip = 0;
 SVMnum = 0;
 for i = 0:9
     j = 1 + skip; %modify j so we do not repeat any SVMs
@@ -65,7 +65,7 @@ for i = 0:9
         output_testOvO_delete(idx_firstclass) = j;
         output_testOvO_delete(idx_secondclass) = i;
         output_testmatrixOvO_delete(:,SVMnum) = output_testOvO_delete;
-        j = j + 1
+        j = j + 1;
     end
 end
 
