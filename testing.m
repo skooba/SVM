@@ -1,6 +1,14 @@
+%%
 [n_test,~] = size(test_samples)
-%sigma = sum(var(test_samples))
-K_test = gaussian_kernel(n,n_test,train_samples,test_samples,.23);
+
+%Use next line for most accurate one vs one output
+K_test = gaussian_kernel(n,n_test,train_samples,test_samples,.77);
+
+%Use next line for most accurate one vs all output
+%K_test = gaussian_kernel(n,n_test,train_samples,test_samples,.23);
+
+%Use next line for most accurate DAGSVM output
+%K_test = gaussian_kernel(n,n_test,train_samples,test_samples,.24);
 %%
 y_test = zeros(n_test,1);
 y_test_matrix = zeros(n_test,9);
@@ -55,7 +63,7 @@ output_testmatrixOvO_delete = zeros(n_test,45);
 skip = 0;
 SVMnum = 0;
 for i = 0:9
-    j = 1 + skip; %modify j so we do not repeat any SVMs
+    j = 1 + skip; %increase j so we do not repeat any SVMs
     skip = skip + 1;
     while j <= 9;
         SVMnum = SVMnum + 1;
@@ -87,15 +95,15 @@ while list_length > 1
 end
 
 %%
-disp('The confusion matrix for the SVM one vs. all algorthim is:')
+disp('The confusion matrix for the SVM one vs. all algorithm is:')
 conmat_ova = confusionmat(test_samples_labels,output)
-disp('The accuracy for the SVM one vs. all algorthim is:')
+disp('The accuracy for the SVM one vs. all algorithm is:')
 accuracy_ova = trace(conmat_ova)/n_test
-disp('The confusion matrix for the SVM one vs. one algorthim is:')
+disp('The confusion matrix for the SVM one vs. one algorithm is:')
 conmat_ovo = confusionmat(test_samples_labels,output_OvO)
-disp('The accuracy for the SVM one vs. one algorthim is:')
+disp('The accuracy for the SVM one vs. one algorithm is:')
 accuracy_ovo = trace(conmat_ovo)/n_test
-disp('The confusion matrix for the DAGSVM algorthim is:')
+disp('The confusion matrix for the DAGSVM algorithm is:')
 conmat_dagsvm = confusionmat(test_samples_labels,matrix)
-disp('The accuracy for the DAGSVM algorthim is:')
+disp('The accuracy for the DAGSVM algorithm is:')
 accuracy_dagsvm = trace(conmat_dagsvm)/n_test

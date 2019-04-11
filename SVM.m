@@ -1,5 +1,5 @@
 % instead of maximizing, minimize the negative of the objective function
-function a = SVM(n,targets,K)
+function a = SVM(n,targets,K, C)
     H = zeros(n);
     for i=1:n
         for j=1:n
@@ -13,7 +13,11 @@ function a = SVM(n,targets,K)
     beq = 0;
  
     lb = zeros(n,1);
-    ub = ones(n,1);
-
+    ub = C*ones(n,1);
+    
+    %use soft margin for one vs all
+    %a = quadprog(H,f,[],[],Aeq,beq,lb); 
+    
+    %use hard margin for one vs one
     a = quadprog(H,f,[],[],Aeq,beq,lb,ub);
 end
